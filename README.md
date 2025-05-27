@@ -1,9 +1,9 @@
 # 🍄 Encyclopédie Toxicologique de Sanjiro de la Salamandre
 
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen)](https://votre-username.github.io/mycosuivi)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen)](https://betrouni.github.io/encyclo)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-> 🚀 **[Voir la démonstration en ligne](https://votre-username.github.io/mycosuivi)**
+> 🚀 **[Voir la démonstration en ligne](https://betrouni.github.io/encyclo)**
 
 Une encyclopédie interactive des champignons toxicologiques collectés par Sanjiro dans l'univers de Naruto, présentée dans un format type Pokédex.
 
