@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encyclopédie Toxicologique de Sanjiro - Salamandre</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">
+                    <span class="title-main">Encyclopédie Toxicologique d'Otogakure</span>
+                    <span class="title-sub">Archives Secrètes de Sanjiro - Village Caché du Son</span>
+                </h1>
+                <div class="salamander-badge">🦎</div>
+            </div>
+        </header>
+
+        <div class="search-section">
+            <div class="search-container">
+                <label for="country-filter" class="search-label">Filtrer par pays :</label>
+                <select id="country-filter" class="country-select">
+                    <option value="">Tous les pays</option>
+                </select>
+            </div>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-number" id="total-mushrooms">0</span>
+                    <span class="stat-label">Champignons</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="total-countries">0</span>
+                    <span class="stat-label">Pays explorés</span>
+                </div>
+            </div>
+        </div>
+
+        <main class="mushroom-grid" id="mushroom-grid">
+            <!-- Les cartes de champignons seront générées ici -->
+        </main>
+
+        <div class="no-results" id="no-results" style="display: none;">
+            <div class="no-results-content">
+                <div class="no-results-icon">🍄</div>
+                <h3>Aucun champignon trouvé</h3>
+                <p>Essayez de modifier vos critères de recherche</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 

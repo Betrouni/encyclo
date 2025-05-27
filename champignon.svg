@@ -1,0 +1,49 @@
+<svg width="400" height="240" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="capGradient" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A0522D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+    </radialGradient>
+    <linearGradient id="stemGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F5F5DC;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFFACD;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F0E68C;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="spotGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0.3" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="240" fill="#1e293b"/>
+  
+  <!-- Mushroom stem -->
+  <ellipse cx="200" cy="180" rx="25" ry="50" fill="url(#stemGradient)" stroke="#D2B48C" stroke-width="2"/>
+  
+  <!-- Mushroom cap -->
+  <ellipse cx="200" cy="100" rx="80" ry="45" fill="url(#capGradient)" stroke="#654321" stroke-width="2"/>
+  
+  <!-- Spots on cap -->
+  <circle cx="170" cy="85" r="8" fill="url(#spotGradient)"/>
+  <circle cx="210" cy="90" r="6" fill="url(#spotGradient)"/>
+  <circle cx="190" cy="110" r="5" fill="url(#spotGradient)"/>
+  <circle cx="230" cy="105" r="7" fill="url(#spotGradient)"/>
+  <circle cx="150" cy="105" r="4" fill="url(#spotGradient)"/>
+  
+  <!-- Gills under cap -->
+  <path d="M 130 120 Q 200 135 270 120" stroke="#8B4513" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M 135 125 Q 200 140 265 125" stroke="#8B4513" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M 140 130 Q 200 145 260 130" stroke="#8B4513" stroke-width="1" fill="none" opacity="0.3"/>
+  
+  <!-- Ground/base -->
+  <ellipse cx="200" cy="220" rx="60" ry="8" fill="#334155" opacity="0.5"/>
+  
+  <!-- Mystical glow effect -->
+  <circle cx="200" cy="100" rx="90" ry="55" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.3"/>
+  <circle cx="200" cy="100" rx="95" ry="60" fill="none" stroke="#8b5cf6" stroke-width="1" opacity="0.2"/>
+  
+  <!-- Title -->
+  <text x="200" y="30" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#f8fafc" text-anchor="middle">Champignon Mystique</text>
+</svg> 
