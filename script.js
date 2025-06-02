@@ -1,17 +1,19 @@
 // Variables globales
-let currentFilter = '';
-let allMushrooms = [];
+let currentCountryFilter = '';
+let currentCategoryFilter = '';
+let allItems = [];
 
 // Initialisation de l'application
 document.addEventListener('DOMContentLoaded', function() {
-    allMushrooms = window.mushroomsData || [];
+    allItems = window.mushroomsData || [];
     initializeApp();
 });
 
 // Initialisation principale
 function initializeApp() {
     populateCountryFilter();
-    displayMushrooms(allMushrooms);
+    populateCategoryFilter();
+    displayItems(allItems);
     updateStats();
     setupEventListeners();
 }
@@ -19,7 +21,7 @@ function initializeApp() {
 // Remplir le select des pays
 function populateCountryFilter() {
     const countrySelect = document.getElementById('country-filter');
-    const countries = [...new Set(allMushrooms.map(mushroom => mushroom.pays))].sort();
+    const countries = [...new Set(allItems.map(item => item.pays))].sort();
     
     // Vider les options existantes (sauf "Tous les pays")
     countrySelect.innerHTML = '<option value="">Tous les pays</option>';
@@ -33,12 +35,29 @@ function populateCountryFilter() {
     });
 }
 
-// Afficher les champignons
-function displayMushrooms(mushrooms) {
-    const grid = document.getElementById('mushroom-grid');
+// Remplir le select des catégories
+function populateCategoryFilter() {
+    const categorySelect = document.getElementById('category-filter');
+    const categories = [...new Set(allItems.map(item => item.categorie))].sort();
+    
+    // Vider les options existantes (sauf "Toutes les entités")
+    categorySelect.innerHTML = '<option value="">Toutes les entités</option>';
+    
+    // Ajouter les catégories avec des noms plus beaux
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category === 'champignon' ? 'Champignons' : 'Plantes';
+        categorySelect.appendChild(option);
+    });
+}
+
+// Afficher les éléments
+function displayItems(items) {
+    const grid = document.getElementById('item-grid');
     const noResults = document.getElementById('no-results');
     
-    if (mushrooms.length === 0) {
+    if (items.length === 0) {
         grid.style.display = 'none';
         noResults.style.display = 'block';
         return;
@@ -47,10 +66,10 @@ function displayMushrooms(mushrooms) {
     grid.style.display = 'grid';
     noResults.style.display = 'none';
     
-    grid.innerHTML = mushrooms.map(mushroom => createMushroomCard(mushroom)).join('');
+    grid.innerHTML = items.map(item => createItemCard(item)).join('');
     
     // Animation d'apparition des cartes
-    const cards = grid.querySelectorAll('.mushroom-card');
+    const cards = grid.querySelectorAll('.item-card');
     cards.forEach((card, index) => {
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
@@ -62,27 +81,37 @@ function displayMushrooms(mushrooms) {
     });
 }
 
-// Créer une carte de champignon
-function createMushroomCard(mushroom) {
-    const toxicityStars = generateStars(mushroom.toxicite);
-    const hallucinogenicStars = generateStars(mushroom.hallucinogene);
-    const colorsHtml = mushroom.couleurs.map(color => 
+// Créer une carte d'élément
+function createItemCard(item) {
+    const toxicityStars = generateStars(item.toxicite);
+    const hallucinogenicStars = generateStars(item.hallucinogene);
+    const colorsHtml = item.couleurs.map(color => 
         `<span class="color-tag">${color}</span>`
     ).join('');
     
+    // Choisir l'icône et l'image selon la catégorie
+    const isPlant = item.categorie === 'plante';
+    const categoryIcon = isPlant ? '🌿' : '🍄';
+    const imageSrc = isPlant ? 'plante.webp' : 'champignon.webp';
+    const categoryLabel = isPlant ? 'Plante' : 'Champignon';
+    
     return `
-        <div class="mushroom-card">
-            <img src="champignon.webp" alt="${mushroom.nom}" class="mushroom-image" loading="lazy">
+        <div class="item-card">
+            <div class="category-badge">
+                <span class="category-icon">${categoryIcon}</span>
+                <span class="category-text">${categoryLabel}</span>
+            </div>
+            <img src="${imageSrc}" alt="${item.nom}" class="item-image" loading="lazy">
             
-            <div class="mushroom-content">
-                <div class="mushroom-header">
-                    <h3 class="mushroom-name">${mushroom.nom}</h3>
-                    <span class="mushroom-country">${mushroom.pays}</span>
+            <div class="item-content">
+                <div class="item-header">
+                    <h3 class="item-name">${item.nom}</h3>
+                    <span class="item-country">${item.pays}</span>
                 </div>
                 
-                <div class="mushroom-price">
+                <div class="item-price">
                     <span class="price-icon">💰</span>
-                    <span>${formatPrice(mushroom.prix_kg)} ryôs/kg</span>
+                    <span>${formatPrice(item.prix_kg)} ryôs/kg</span>
                 </div>
                 
                 <div class="ratings-container">
@@ -136,32 +165,45 @@ function formatPrice(price) {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
-// Filtrer les champignons par pays
-function filterMushrooms() {
+// Filtrer les éléments par pays et catégorie
+function filterItems() {
     const selectedCountry = document.getElementById('country-filter').value;
-    currentFilter = selectedCountry;
+    const selectedCategory = document.getElementById('category-filter').value;
+    currentCountryFilter = selectedCountry;
+    currentCategoryFilter = selectedCategory;
     
-    let filteredMushrooms;
-    if (selectedCountry === '') {
-        filteredMushrooms = allMushrooms;
-    } else {
-        filteredMushrooms = allMushrooms.filter(mushroom => 
-            mushroom.pays === selectedCountry
+    let filteredItems = allItems;
+    
+    // Filtrer par pays
+    if (selectedCountry !== '') {
+        filteredItems = filteredItems.filter(item => 
+            item.pays === selectedCountry
         );
     }
     
-    displayMushrooms(filteredMushrooms);
-    updateStats(filteredMushrooms);
+    // Filtrer par catégorie
+    if (selectedCategory !== '') {
+        filteredItems = filteredItems.filter(item => 
+            item.categorie === selectedCategory
+        );
+    }
+    
+    displayItems(filteredItems);
+    updateStats(filteredItems);
 }
 
 // Mettre à jour les statistiques
-function updateStats(mushrooms = allMushrooms) {
-    const totalMushrooms = mushrooms.length;
-    const totalCountries = [...new Set(allMushrooms.map(m => m.pays))].length;
+function updateStats(items = allItems) {
+    const totalItems = items.length;
+    const totalCountries = [...new Set(allItems.map(m => m.pays))].length;
+    const totalMushrooms = allItems.filter(item => item.categorie === 'champignon').length;
+    const totalPlants = allItems.filter(item => item.categorie === 'plante').length;
     
     // Animation des chiffres
-    animateNumber('total-mushrooms', totalMushrooms);
+    animateNumber('total-items', totalItems);
     animateNumber('total-countries', totalCountries);
+    animateNumber('total-mushrooms', totalMushrooms);
+    animateNumber('total-plants', totalPlants);
 }
 
 // Animation des nombres
@@ -189,57 +231,77 @@ function animateNumber(elementId, targetNumber) {
 // Configuration des écouteurs d'événements
 function setupEventListeners() {
     const countrySelect = document.getElementById('country-filter');
-    countrySelect.addEventListener('change', filterMushrooms);
+    const categorySelect = document.getElementById('category-filter');
+    
+    countrySelect.addEventListener('change', filterItems);
+    categorySelect.addEventListener('change', filterItems);
     
     // Effet de survol sur les cartes
     document.addEventListener('mouseover', function(e) {
-        if (e.target.closest('.mushroom-card')) {
-            e.target.closest('.mushroom-card').style.transform = 'translateY(-8px) scale(1.02)';
+        if (e.target.closest('.item-card')) {
+            e.target.closest('.item-card').style.transform = 'translateY(-8px) scale(1.02)';
         }
     });
     
     document.addEventListener('mouseout', function(e) {
-        if (e.target.closest('.mushroom-card')) {
-            e.target.closest('.mushroom-card').style.transform = 'translateY(0) scale(1)';
+        if (e.target.closest('.item-card')) {
+            e.target.closest('.item-card').style.transform = 'translateY(0) scale(1)';
         }
     });
     
     // Raccourcis clavier
     document.addEventListener('keydown', function(e) {
-        // Échap pour réinitialiser le filtre
+        // Échap pour réinitialiser les filtres
         if (e.key === 'Escape') {
             countrySelect.value = '';
-            filterMushrooms();
+            categorySelect.value = '';
+            filterItems();
         }
         
-        // Ctrl/Cmd + F pour focus sur le select
+        // Ctrl/Cmd + F pour focus sur le select pays
         if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
             e.preventDefault();
             countrySelect.focus();
         }
+        
+        // Ctrl/Cmd + G pour focus sur le select catégorie
+        if ((e.ctrlKey || e.metaKey) && e.key === 'g') {
+            e.preventDefault();
+            categorySelect.focus();
+        }
     });
 }
 
-// Fonctions utilitaires pour l'ajout de nouveaux champignons (pour usage futur)
-function addMushroom(mushroomData) {
-    allMushrooms.push(mushroomData);
+// Fonctions utilitaires pour l'ajout de nouveaux éléments (pour usage futur)
+function addItem(itemData) {
+    allItems.push(itemData);
     populateCountryFilter();
-    if (currentFilter === '' || currentFilter === mushroomData.pays) {
-        displayMushrooms(allMushrooms.filter(m => 
-            currentFilter === '' || m.pays === currentFilter
-        ));
+    populateCategoryFilter();
+    
+    // Vérifier si l'élément correspond aux filtres actuels
+    const matchesCountry = currentCountryFilter === '' || currentCountryFilter === itemData.pays;
+    const matchesCategory = currentCategoryFilter === '' || currentCategoryFilter === itemData.categorie;
+    
+    if (matchesCountry && matchesCategory) {
+        const filteredItems = allItems.filter(item => {
+            const countryMatch = currentCountryFilter === '' || item.pays === currentCountryFilter;
+            const categoryMatch = currentCategoryFilter === '' || item.categorie === currentCategoryFilter;
+            return countryMatch && categoryMatch;
+        });
+        displayItems(filteredItems);
     }
     updateStats();
 }
 
 // Fonction de recherche avancée (pour extension future)
-function searchMushrooms(query) {
+function searchItems(query) {
     const searchTerms = query.toLowerCase().split(' ');
-    return allMushrooms.filter(mushroom => {
+    return allItems.filter(item => {
         const searchableText = [
-            mushroom.nom,
-            mushroom.pays,
-            ...mushroom.couleurs
+            item.nom,
+            item.pays,
+            item.categorie,
+            ...item.couleurs
         ].join(' ').toLowerCase();
         
         return searchTerms.every(term => searchableText.includes(term));
@@ -247,9 +309,9 @@ function searchMushrooms(query) {
 }
 
 // Export des fonctions pour usage externe
-window.MushroomEncyclopedia = {
-    addMushroom,
-    searchMushrooms,
-    filterMushrooms,
-    allMushrooms: () => allMushrooms
+window.ToxicologyEncyclopedia = {
+    addItem,
+    searchItems,
+    filterItems,
+    allItems: () => allItems
 }; 

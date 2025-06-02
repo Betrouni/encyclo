@@ -16,6 +16,8 @@
     --sound-purple: #6b46c1;
     --sound-dark: #1e1b4b;
     --sound-silver: #94a3b8;
+    --plant-green: #10b981;
+    --mushroom-orange: #f59e0b;
     --background: linear-gradient(135deg, #0f0f23 0%, #1a0d2e 50%, #16213e 100%);
     --surface: rgba(30, 27, 75, 0.8);
     --surface-light: rgba(107, 70, 193, 0.15);
@@ -70,8 +72,6 @@ body {
     background: linear-gradient(90deg, transparent, var(--sound-purple), var(--accent-color), var(--sound-purple), transparent);
     animation: soundWave 3s ease-in-out infinite;
 }
-
-
 
 @keyframes soundWave {
     0%, 100% { opacity: 0.5; transform: scaleX(1); }
@@ -132,8 +132,6 @@ body {
     font-family: serif;
 }
 
-
-
 @keyframes pulse {
     0%, 100% { opacity: 0.3; transform: scale(1); }
     50% { opacity: 0.8; transform: scale(1.1); }
@@ -170,9 +168,15 @@ body::before {
 .search-section {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 40px;
     gap: 24px;
+    flex-wrap: wrap;
+}
+
+.filters-container {
+    display: flex;
+    gap: 20px;
     flex-wrap: wrap;
 }
 
@@ -185,12 +189,10 @@ body::before {
     padding: 24px;
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
-    min-width: 320px;
+    min-width: 280px;
     backdrop-filter: blur(20px);
     position: relative;
 }
-
-
 
 .search-label {
     font-family: 'Orbitron', monospace !important;
@@ -202,7 +204,7 @@ body::before {
     text-transform: uppercase;
 }
 
-.country-select {
+.country-select, .category-select {
     padding: 12px 16px;
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -212,20 +214,20 @@ body::before {
     color: var(--text-primary);
     cursor: pointer;
     transition: var(--transition);
-    min-width: 200px;
+    min-width: 180px;
     backdrop-filter: blur(10px);
     letter-spacing: 0.05em;
     font-weight: 500;
 }
 
-.country-select:focus {
+.country-select:focus, .category-select:focus {
     outline: none;
     border-color: var(--sound-purple);
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
     background: rgba(107, 70, 193, 0.1);
 }
 
-.country-select option {
+.country-select option, .category-select option {
     font-family: 'Orbitron', monospace !important;
     background: var(--surface);
     color: var(--text-primary);
@@ -236,6 +238,7 @@ body::before {
 .stats-container {
     display: flex;
     gap: 16px;
+    flex-wrap: wrap;
 }
 
 .stat-item {
@@ -262,8 +265,6 @@ body::before {
     animation: soundWave 2s ease-in-out infinite;
 }
 
-
-
 .stat-number {
     display: block;
     font-size: 2.5rem;
@@ -282,16 +283,16 @@ body::before {
     font-weight: 500;
 }
 
-/* Grille des champignons */
-.mushroom-grid {
+/* Grille des éléments */
+.item-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 32px;
     margin-bottom: 48px;
 }
 
-/* Cartes de champignons */
-.mushroom-card {
+/* Cartes d'éléments */
+.item-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--border-radius-lg);
@@ -303,7 +304,7 @@ body::before {
     backdrop-filter: blur(20px);
 }
 
-.mushroom-card::before {
+.item-card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -315,36 +316,66 @@ body::before {
     transition: var(--transition);
 }
 
-.mushroom-card:hover {
+.item-card:hover {
     transform: translateY(-8px) scale(1.02);
     box-shadow: var(--card-hover-shadow);
     border-color: var(--sound-purple);
 }
 
-.mushroom-card:hover::before {
+.item-card:hover::before {
     opacity: 1;
     animation: soundWave 1.5s ease-in-out infinite;
 }
 
-.mushroom-image {
+.category-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.3);
+}
+
+.category-icon {
+    font-size: 1.1rem;
+    font-family: serif;
+}
+
+.category-text {
+    font-family: 'Orbitron', monospace !important;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.item-image {
     width: 100%;
     height: 240px;
     object-fit: cover;
     border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
-.mushroom-content {
+.item-content {
     padding: 24px;
 }
 
-.mushroom-header {
+.item-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 16px;
 }
 
-.mushroom-name {
+.item-name {
     font-family: 'Cinzel', serif !important;
     font-size: 1.4rem;
     font-weight: 600;
@@ -353,7 +384,7 @@ body::before {
     letter-spacing: 0.02em;
 }
 
-.mushroom-country {
+.item-country {
     background: linear-gradient(135deg, var(--sound-dark), var(--sound-purple));
     color: var(--sound-silver);
     padding: 8px 16px;
@@ -368,7 +399,7 @@ body::before {
     box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
 }
 
-.mushroom-price {
+.item-price {
     font-family: 'Orbitron', monospace !important;
     font-size: 1.2rem;
     font-weight: 700;
@@ -534,7 +565,7 @@ body::before {
 
 /* Responsive */
 @media (max-width: 1024px) {
-    .mushroom-grid {
+    .item-grid {
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     }
 }
@@ -555,6 +586,11 @@ body::before {
         gap: 20px;
     }
     
+    .filters-container {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
     .search-container {
         min-width: auto;
     }
@@ -563,7 +599,7 @@ body::before {
         justify-content: center;
     }
     
-    .mushroom-grid {
+    .item-grid {
         grid-template-columns: 1fr;
         gap: 24px;
     }
@@ -588,13 +624,13 @@ body::before {
         letter-spacing: 0.01em;
     }
     
-    .mushroom-header {
+    .item-header {
         flex-direction: column;
         gap: 12px;
         align-items: flex-start;
     }
     
-    .mushroom-country {
+    .item-country {
         align-self: flex-start;
     }
     
@@ -610,7 +646,7 @@ body::before {
         gap: 12px;
     }
     
-    .country-select {
+    .country-select, .category-select {
         min-width: auto;
     }
     

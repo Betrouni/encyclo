@@ -20,16 +20,32 @@
         </header>
 
         <div class="search-section">
-            <div class="search-container">
-                <label for="country-filter" class="search-label">Filtrer par pays :</label>
-                <select id="country-filter" class="country-select">
-                    <option value="">Tous les pays</option>
-                </select>
+            <div class="filters-container">
+                <div class="search-container">
+                    <label for="country-filter" class="search-label">Filtrer par pays :</label>
+                    <select id="country-filter" class="country-select">
+                        <option value="">Tous les pays</option>
+                    </select>
+                </div>
+                <div class="search-container">
+                    <label for="category-filter" class="search-label">Filtrer par entité :</label>
+                    <select id="category-filter" class="category-select">
+                        <option value="">Toutes les entités</option>
+                    </select>
+                </div>
             </div>
             <div class="stats-container">
                 <div class="stat-item">
+                    <span class="stat-number" id="total-items">0</span>
+                    <span class="stat-label">Éléments</span>
+                </div>
+                <div class="stat-item">
                     <span class="stat-number" id="total-mushrooms">0</span>
                     <span class="stat-label">Champignons</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="total-plants">0</span>
+                    <span class="stat-label">Plantes</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number" id="total-countries">0</span>
@@ -38,14 +54,14 @@
             </div>
         </div>
 
-        <main class="mushroom-grid" id="mushroom-grid">
-            <!-- Les cartes de champignons seront générées ici -->
+        <main class="item-grid" id="item-grid">
+            <!-- Les cartes d'éléments seront générées ici -->
         </main>
 
         <div class="no-results" id="no-results" style="display: none;">
             <div class="no-results-content">
-                <div class="no-results-icon">🍄</div>
-                <h3>Aucun champignon trouvé</h3>
+                <div class="no-results-icon">🔍</div>
+                <h3>Aucun élément trouvé</h3>
                 <p>Essayez de modifier vos critères de recherche</p>
             </div>
         </div>
