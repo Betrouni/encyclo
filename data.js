@@ -1,7 +1,7 @@
 // Données des champignons toxicologiques de Sanjiro de la Salamandre
 const mushroomsData = [
   {
-    "nom": "Otoyake",
+    "nom": "Otoyatoke",
     "pays": "Pays du Son",
     "prix_kg": 2800,
     "toxicite": 4.5,
