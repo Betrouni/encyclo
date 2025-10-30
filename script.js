@@ -6,7 +6,7 @@ let allItems = [];
 // Configuration: collez ici l'URL GViz publiée de votre Google Sheet (optionnel)
 // Format attendu: https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/gviz/tq?tqx=out:json&gid=GID
 // Laissez vide pour utiliser les données locales (data.js)
-const SHEET_GVIZ_URL = 'https://docs.google.com/spreadsheets/d/1mmrhSvfq62a2NlEbDcNUqPjC1I8-fsY5SX0tGYP6Ctk/edit?gid=1400924564#gid=1400924564';
+const SHEET_GVIZ_URL = 'https://docs.google.com/spreadsheets/d/1mmrhSvfq62a2NlEbDcNUqPjC1I8-fsY5SX0tGYP6Ctk/gviz/tq?tqx=out:json&gid=1400924564';
 
 // Initialisation de l'application
 document.addEventListener('DOMContentLoaded', function() {
