@@ -37,8 +37,15 @@ async function loadDataAndInitialize() {
 
 // Chargement depuis Google Sheets (GViz JSON)
 async function fetchGoogleSheetData(gvizUrl) {
-    const response = await fetch(gvizUrl, { cache: 'no-store' });
+    // Ajoute un paramètre anti-cache pour forcer l'actualisation
+    const url = gvizUrl + (gvizUrl.includes('?') ? '&' : '?') + 'cacheBust=' + Date.now();
+    const response = await fetch(url, { cache: 'no-store' });
     const text = await response.text();
+
+    // Si on reçoit une page HTML (souvent une page de connexion), on lève une erreur
+    if (/^\s*<!DOCTYPE html>/i.test(text) || /^\s*<html/i.test(text)) {
+        throw new Error('Google Sheets non public ou nécessite une connexion');
+    }
 
     // Le format GViz est encapsulé: google.visualization.Query.setResponse({...});
     const jsonString = text
