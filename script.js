@@ -3,11 +3,97 @@ let currentCountryFilter = '';
 let currentCategoryFilter = '';
 let allItems = [];
 
+// Configuration: collez ici l'URL GViz publiée de votre Google Sheet (optionnel)
+// Format attendu: https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/gviz/tq?tqx=out:json&gid=GID
+// Laissez vide pour utiliser les données locales (data.js)
+const SHEET_GVIZ_URL = '';
+
 // Initialisation de l'application
 document.addEventListener('DOMContentLoaded', function() {
-    allItems = window.mushroomsData || [];
-    initializeApp();
+    loadDataAndInitialize();
 });
+
+async function loadDataAndInitialize() {
+    // Tente de charger les données depuis Google Sheets, sinon fallback local
+    try {
+        if (SHEET_GVIZ_URL && typeof SHEET_GVIZ_URL === 'string' && SHEET_GVIZ_URL.startsWith('http')) {
+            const sheetItems = await fetchGoogleSheetData(SHEET_GVIZ_URL);
+            if (Array.isArray(sheetItems) && sheetItems.length > 0) {
+                allItems = sheetItems;
+            } else {
+                allItems = window.mushroomsData || [];
+            }
+        } else {
+            allItems = window.mushroomsData || [];
+        }
+    } catch (e) {
+        // En cas d'erreur, fallback aux données locales
+        allItems = window.mushroomsData || [];
+        // Optionnel: log en console pour debug
+        console.warn('Chargement Google Sheets échoué, utilisation des données locales.', e);
+    }
+    initializeApp();
+}
+
+// Chargement depuis Google Sheets (GViz JSON)
+async function fetchGoogleSheetData(gvizUrl) {
+    const response = await fetch(gvizUrl, { cache: 'no-store' });
+    const text = await response.text();
+
+    // Le format GViz est encapsulé: google.visualization.Query.setResponse({...});
+    const jsonString = text
+        .replace(/^.*setResponse\(/s, '')
+        .replace(/\);\s*$/s, '');
+
+    const data = JSON.parse(jsonString);
+    const cols = (data.table && data.table.cols) ? data.table.cols.map(c => (c && c.label ? c.label : '').trim()) : [];
+    const rows = (data.table && data.table.rows) ? data.table.rows : [];
+
+    // Attendu: colonnes nom | pays | prix_kg | toxicite | hallucinogene | couleurs | categorie
+    const headerIndex = Object.fromEntries(cols.map((name, idx) => [name.toLowerCase(), idx]));
+
+    function getCell(row, key) {
+        const idx = headerIndex[key];
+        if (idx === undefined) return null;
+        const cell = row.c[idx];
+        if (!cell) return null;
+        return cell.f != null ? cell.f : cell.v;
+    }
+
+    const items = rows.map(r => {
+        const nom = getCell(r, 'nom') || '';
+        const pays = getCell(r, 'pays') || '';
+        const prix = getCell(r, 'prix_kg');
+        const tox = getCell(r, 'toxicite');
+        const hallu = getCell(r, 'hallucinogene');
+        const couleursRaw = getCell(r, 'couleurs') || '';
+        const categorie = (getCell(r, 'categorie') || '').toString().toLowerCase();
+
+        const prix_kg = typeof prix === 'number' ? prix : parseFloat((prix || '').toString().replace(/\s/g, '').replace(',', '.')) || 0;
+        const toxicite = typeof tox === 'number' ? tox : parseFloat((tox || '').toString().replace(',', '.')) || 0;
+        const hallucinogene = typeof hallu === 'number' ? hallu : parseFloat((hallu || '').toString().replace(',', '.')) || 0;
+
+        const couleurs = couleursRaw
+            .toString()
+            .split('|')
+            .map(s => s.trim())
+            .filter(Boolean);
+
+        const normalizedCategory = categorie.includes('plante') ? 'plante' : 'champignon';
+
+        return {
+            nom,
+            pays,
+            prix_kg,
+            toxicite,
+            hallucinogene,
+            couleurs,
+            categorie: normalizedCategory
+        };
+    }).filter(item => item.nom && item.pays);
+
+    return items;
+}
 
 // Initialisation principale
 function initializeApp() {
@@ -232,9 +318,13 @@ function animateNumber(elementId, targetNumber) {
 function setupEventListeners() {
     const countrySelect = document.getElementById('country-filter');
     const categorySelect = document.getElementById('category-filter');
+    const exportBtn = document.getElementById('export-csv');
     
     countrySelect.addEventListener('change', filterItems);
     categorySelect.addEventListener('change', filterItems);
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportToCSV);
+    }
     
     // Effet de survol sur les cartes
     document.addEventListener('mouseover', function(e) {
@@ -270,6 +360,29 @@ function setupEventListeners() {
             categorySelect.focus();
         }
     });
+}
+
+// Exporter les données au format CSV (pour import Google Sheets)
+function exportToCSV() {
+    const headers = ['nom','pays','prix_kg','toxicite','hallucinogene','couleurs','categorie'];
+    const csvEscape = s => '"' + (s ?? '').toString().replace(/"/g, '""') + '"';
+    const rows = (allItems && allItems.length ? allItems : (window.mushroomsData || [])).map(it => [
+        it.nom,
+        it.pays,
+        it.prix_kg,
+        it.toxicite,
+        it.hallucinogene,
+        (it.couleurs || []).join('|'),
+        it.categorie
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(csvEscape).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'toxicology_data.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
 }
 
 // Fonctions utilitaires pour l'ajout de nouveaux éléments (pour usage futur)
